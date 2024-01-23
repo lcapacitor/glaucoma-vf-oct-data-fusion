@@ -17,6 +17,8 @@ Yan(Leo) Li<sup>1</sup>, Moshe Eizenman<sup>2,3</sup>, Runjie B. Shi<sup>3,4</su
 ```
 python cv_train.py --num_cv 10
 ```
+> [!NOTE]
+> See all training arguments in the cv_train.py file.
 
 #### Evalute trained AE data fusion models with mock data:
 ```
