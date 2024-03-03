@@ -1,5 +1,5 @@
 ## An interpretable data fusion model for Visual Field and Optical Coherence Tomography measurements from glaucoma patients.
-This repository is a part of the paper ["Using Fused Data from Perimetry and Optical Coherence Tomography to Improve the Detection of Visual Field Progression in Glaucoma"](https://www.mdpi.com/2306-5354/11/3/250) published in Bioengineering.
+This repository is a part of the paper ["Using Fused Data from Perimetry and Optical Coherence Tomography to Improve the Detection of Visual Field Progression in Glaucoma"](https://www.mdpi.com/2306-5354/11/3/250).
 
 ![AE_architecture](https://github.com/lcapacitor/glaucoma-vf-oct-data-fusion/blob/main/figures/ae_architecture.jpg)
 
