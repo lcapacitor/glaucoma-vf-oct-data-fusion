@@ -1,3 +1,16 @@
+#!/usr/bin/env python3
+#---------------------------------------------------------------------------------------------
+# Description: The AE data fusion model to integrate VF and OCT measurements
+# Author     : Leo(Yan) Li
+# Date       : January 22, 2024
+# version    : 1.0
+# License    : MIT License
+# Encoder network (MLP_Encoder) --> Encoding --> Decoder network (MLP_Decoder)
+#       input_dim:      Input vector dimension
+#       hidden_dim:     Hidden layer dimension
+#       z_dim:          Encoding space dimension
+#       out_dim:        Output vector dimension (Note: input_dim == out_dim)
+#---------------------------------------------------------------------------------------------
 import torch
 import torch.nn as nn
 from torchsummary import summary
@@ -40,7 +53,9 @@ class MLP_Decoder(nn.Module):
 
 
 if __name__ == '__main__':
-    # For testing use
+    #-------------------------------------------------
+    # Test the model with mock data
+    #-------------------------------------------------
     data_x = torch.rand((10, 52+256+1))
     in_dim, hid_dim, z_dim = data_x.shape[1], 200, 52
     encoder = MLP_Encoder(in_dim, hid_dim, z_dim, True)
@@ -50,8 +65,9 @@ if __name__ == '__main__':
     print('Encoding:', encoding.shape)
     output = decoder(encoding)
     print('Output:', output.shape)
-
+    #-------------------------------------------------
     # Show the number of parameters in each network
+    #-------------------------------------------------
     print(summary(encoder.cuda(), (1, in_dim)))
     print(summary(decoder.cuda(), (1, z_dim)))
 

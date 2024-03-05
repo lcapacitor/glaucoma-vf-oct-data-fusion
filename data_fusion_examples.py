@@ -86,9 +86,9 @@ def display_example(selected_eye):
         ax1.set_axis_off()
         ax2.set_axis_off()
         ax3.set_axis_off()
-        ax1.set_title(f'VF Input: MD={md_in:.1f} PSD={psd_in:.1f}\nAge={test_age:.1f}', fontsize=9)
-        ax2.set_title(f'VF Fused: MD={md_fuse:.1f} PSD={psd_fuse:.1f}', fontsize=9)
-        ax3.set_title(f'VF Recon: MD={md_rec:.1f} PSD={psd_rec:.1f}\nAge={recon_age:.1f}', fontsize=9)
+        ax1.set_title(fr'VF Input: MD=${md_in:.1f}$ PSD={psd_in:.1f}'+f'\nAge={test_age:.1f}', fontsize=9)
+        ax2.set_title(fr'VF Fused: MD=${md_fuse:.1f}$ PSD={psd_fuse:.1f}', fontsize=9)
+        ax3.set_title(fr'VF Recon: MD=${md_rec:.1f}$ PSD={psd_rec:.1f}'+f'\nAge={recon_age:.1f}', fontsize=9)
         ax4.plot(np.arange(360), np.interp(np.arange(360), np.linspace(0,360,256), test_rnfl), label=rf'Input:  mRNFLT={np.mean(test_rnfl):.1f} $\mu$m',alpha=0.9)
         ax4.plot(np.arange(360), np.interp(np.arange(360), np.linspace(0,360,256), recon_rnfl),label=rf'Recon: mRNFLT={np.mean(recon_rnfl):.1f} $\mu$m',alpha=0.9)
         ax4.set_xlabel('ONH degree')
@@ -100,6 +100,7 @@ def display_example(selected_eye):
         ax4.set_xticklabels([rf'{x}$^\circ$' for x in np.arange(0, 361, 45)])
         ax4.grid(True, ls='--')
         plt.tight_layout()
+        plt.savefig(f'./figures/example_{selected_eye}.jpeg', dpi=600)
         plt.show()
 
 def visualize_examples():
