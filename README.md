@@ -50,19 +50,19 @@ We generated artificial VFs with typical glaucomatous defect patterns as input f
 ```
 python decode_vf_visualization.py
 ```
-#### Nasal Steps:
+#### a. Nasal Step:
 ![Nasal Step 1](https://github.com/lcapacitor/glaucoma-vf-oct-data-fusion/blob/vf_decode/figures/VF_Decode_NasalStep_1.jpeg)
 ![Nasal Step 2](https://github.com/lcapacitor/glaucoma-vf-oct-data-fusion/blob/vf_decode/figures/VF_Decode_NasalStep_2.jpeg)
 ![Nasal Step 3](https://github.com/lcapacitor/glaucoma-vf-oct-data-fusion/blob/vf_decode/figures/VF_Decode_NasalStep_3.jpeg)
 
-#### Arcuate Damages:
+#### b. Arcuate Scotoma:
 ![Arcuate 1](https://github.com/lcapacitor/glaucoma-vf-oct-data-fusion/blob/vf_decode/figures/VF_Decode_Arcuate_1.jpeg)
 ![Arcuate 2](https://github.com/lcapacitor/glaucoma-vf-oct-data-fusion/blob/vf_decode/figures/VF_Decode_Arcuate_2.jpeg)
 
-#### Hemi-field Damage:
+#### c. Hemi-field Scotoma:
 ![Hemi-field](https://github.com/lcapacitor/glaucoma-vf-oct-data-fusion/blob/vf_decode/figures/VF_Decode_Hemifield_1.jpeg)
 
-#### Tunnel Vision:
+#### d. Tunnel Vision:
 ![Hemi-field](https://github.com/lcapacitor/glaucoma-vf-oct-data-fusion/blob/vf_decode/figures/VF_Decode_TunnelVision_1.jpeg)
 
 
