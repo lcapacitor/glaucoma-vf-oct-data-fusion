@@ -60,7 +60,7 @@ python decode_vf_visualization.py
 ![Arcuate 2](https://github.com/lcapacitor/glaucoma-vf-oct-data-fusion/blob/main/figures/VF_Decode_Arcuate_2.jpeg)
 
 #### Hemi-field Damage:
-![Hemi-field](https://github.com/lcapacitor/glaucoma-vf-oct-data-fusion/blob/main/figures/VF_Decode_Hemi-field_1.jpeg)
+![Hemi-field](https://github.com/lcapacitor/glaucoma-vf-oct-data-fusion/blob/main/figures/VF_Decode_Hemifield_1.jpeg)
 
 #### Tunnel Vision:
 ![Hemi-field](https://github.com/lcapacitor/glaucoma-vf-oct-data-fusion/blob/main/figures/VF_Decode_TunnelVision_1.jpeg)
