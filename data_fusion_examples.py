@@ -15,13 +15,13 @@
 #       (2) Show one example with mild VF defect: 
 #               ptyhon visualize_examples.py --eye mild
 #---------------------------------------------------------------------------------------------
-import os
 import torch
 import joblib
 import argparse
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
+from scipy.ndimage import gaussian_filter1d
 from utils import *
 
 
@@ -63,8 +63,10 @@ def display_example(selected_eye):
         test_age  = de_normalize(test_age,  A_MIN, A_MAX)
         fused_vf  = de_normalize(fused_vf,  V_MIN, V_MAX)
         recon_vf  = de_normalize(recon_vf,  V_MIN, V_MAX)
-        recon_rnfl= de_normalize(recon_rnfl,R_MIN, R_MAX)
         recon_age = de_normalize(recon_age, A_MIN, A_MAX)
+        recon_rnfl= de_normalize(recon_rnfl,R_MIN, R_MAX)
+        # Using a 1D Gaussian filter to smooth the reconstructed RNFLT curve for better visualization
+        recon_rnfl= gaussian_filter1d(recon_rnfl, sigma=3, mode='reflect')
         #-------------------------------------------
         # Calculate MD and PSD
         #-------------------------------------------
@@ -100,7 +102,7 @@ def display_example(selected_eye):
         ax4.set_xticklabels([rf'{x}$^\circ$' for x in np.arange(0, 361, 45)])
         ax4.grid(True, ls='--')
         plt.tight_layout()
-        plt.savefig(f'./figures/example_{selected_eye}.jpeg', dpi=600)
+        plt.savefig(f'./figures/example_{selected_eye}.jpeg', dpi=300)
         plt.show()
 
 def visualize_examples():

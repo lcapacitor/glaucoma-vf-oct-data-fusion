@@ -37,8 +37,8 @@ def eval_visual_cv_ae(test_data, trained_model, train_record, params):
     #---------------------------------------
     # Evaluation parameters
     #---------------------------------------
-    test_encoder= trained_model['encoder'].eval()
-    test_decoder= trained_model['decoder'].eval()
+    test_encoder= trained_model.Encoder.eval()
+    test_decoder= trained_model.Decoder.eval()
     in_type     = params['in_type']
     is_norm     = params['is_norm']
     cur_fold    = params['cur_fold']
@@ -139,17 +139,18 @@ def evaluate_ae_results():
     # Parse argument
     #-----------------------------------------------------------
     parser = argparse.ArgumentParser()
-    parser.add_argument('--num_cv',    nargs='?',const=MODEL_PARAMETERS['num_cv'],    type=int,  default=MODEL_PARAMETERS['num_cv'])
-    parser.add_argument('--batch_size',nargs='?',const=MODEL_PARAMETERS['batch_size'],type=int,  default=MODEL_PARAMETERS['batch_size'])
-    parser.add_argument('--hidden_dim',nargs='?',const=MODEL_PARAMETERS['hidden_dim'],type=int,  default=MODEL_PARAMETERS['hidden_dim'])
-    parser.add_argument('--init_lr',   nargs='?',const=MODEL_PARAMETERS['init_lr'],   type=float,default=MODEL_PARAMETERS['init_lr'])
-    parser.add_argument('--wt_decay',  nargs='?',const=MODEL_PARAMETERS['wt_decay'],  type=float,default=MODEL_PARAMETERS['wt_decay'])
-    parser.add_argument('--loss_type', nargs='?',const=MODEL_PARAMETERS['loss_type'], type=str,  default=MODEL_PARAMETERS['loss_type'])
-    parser.add_argument('--num_epochs',nargs='?',const=MODEL_PARAMETERS['num_epochs'],type=int,  default=MODEL_PARAMETERS['num_epochs'])
-    parser.add_argument('--lambda_z',  nargs='?',const=MODEL_PARAMETERS['lambda_z'],  type=float,default=MODEL_PARAMETERS['lambda_z'])
-    parser.add_argument('--disp_gap',  nargs='?',const=MODEL_PARAMETERS['disp_gap'],  type=int,  default=MODEL_PARAMETERS['disp_gap'])
-    parser.add_argument('--is_norm',   nargs='?',const=MODEL_PARAMETERS['is_norm'],   type=bool, default=MODEL_PARAMETERS['is_norm'])
-    parser.add_argument('--in_type',   nargs='?',const=MODEL_PARAMETERS['in_type'],   type=str,  default=MODEL_PARAMETERS['in_type'])
+    parser.add_argument('--num_cv',       nargs='?',const=MODEL_PARAMETERS['num_cv'],       type=int,  default=MODEL_PARAMETERS['num_cv'])
+    parser.add_argument('--batch_size',   nargs='?',const=MODEL_PARAMETERS['batch_size'],   type=int,  default=MODEL_PARAMETERS['batch_size'])
+    parser.add_argument('--hidden_dim',   nargs='?',const=MODEL_PARAMETERS['hidden_dim'],   type=int,  default=MODEL_PARAMETERS['hidden_dim'])
+    parser.add_argument('--init_lr',      nargs='?',const=MODEL_PARAMETERS['init_lr'],      type=float,default=MODEL_PARAMETERS['init_lr'])
+    parser.add_argument('--wt_decay',     nargs='?',const=MODEL_PARAMETERS['wt_decay'],     type=float,default=MODEL_PARAMETERS['wt_decay'])
+    parser.add_argument('--loss_type',    nargs='?',const=MODEL_PARAMETERS['loss_type'],    type=str,  default=MODEL_PARAMETERS['loss_type'])
+    parser.add_argument('--num_epochs',   nargs='?',const=MODEL_PARAMETERS['num_epochs'],   type=int,  default=MODEL_PARAMETERS['num_epochs'])
+    parser.add_argument('--lambda_z',     nargs='?',const=MODEL_PARAMETERS['lambda_z'],     type=float,default=MODEL_PARAMETERS['lambda_z'])
+    parser.add_argument('--disp_gap',     nargs='?',const=MODEL_PARAMETERS['disp_gap'],     type=int,  default=MODEL_PARAMETERS['disp_gap'])
+    parser.add_argument('--is_norm',      nargs='?',const=MODEL_PARAMETERS['is_norm'],      type=bool, default=MODEL_PARAMETERS['is_norm'])
+    parser.add_argument('--in_type',      nargs='?',const=MODEL_PARAMETERS['in_type'],      type=str,  default=MODEL_PARAMETERS['in_type'])
+    parser.add_argument('--enc_noise_std',nargs='?',const=MODEL_PARAMETERS['enc_noise_std'],type=float,default=MODEL_PARAMETERS['enc_noise_std'])
     args = parser.parse_args()
     #-----------------------------------------------------------
     params = vars(args)

@@ -14,6 +14,7 @@
 import torch
 import torch.nn as nn
 from torchsummary import summary
+from constants import TORCH_DEVICE
 
 
 def init_weights(m):
@@ -31,7 +32,7 @@ class MLP_Encoder(nn.Module):
             nn.Linear(hidden_dim, z_dim),
         )
         self.is_norm = is_norm
-        self.apply(init_weights)
+        #self.apply(init_weights)
     def forward(self, x):
         z = torch.sigmoid(self.model(x)) if self.is_norm else self.model(x)
         return z
@@ -46,29 +47,48 @@ class MLP_Decoder(nn.Module):
             nn.Linear(hidden_dim, out_dim),
         )
         self.is_norm = is_norm
-        self.apply(init_weights)
+        #self.apply(init_weights)
     def forward(self, z):
         out = torch.sigmoid(self.model(z)) if self.is_norm else self.model(z)
         return out
+
+class MLP_AE_model(nn.Module):
+    """
+    AutoEncoder model with random noise added to the encoding before decoding/reconstruction.
+    The noise is randomly sampled from a Gaussian distribution with zeros mean and given standard deviation. 
+    This is to improve the robustness of the Decoder to small changes of the Encoding in the VF space.
+    """
+    def __init__(self, encoder, decoder, enc_noise_std):
+        super(MLP_AE_model, self).__init__()
+        self.Encoder = encoder
+        self.Decoder = decoder
+        self.n_std = enc_noise_std
+        assert enc_noise_std>=0, 'Encoding noise STD should be >=0'
+
+    def forward(self, x):
+        enc_z = self.Encoder(x)
+        if self.n_std>0:
+            noise = torch.normal(mean=0.0, std=self.n_std, size=enc_z.size()).to(TORCH_DEVICE)
+            enc_z = enc_z + noise
+        x_hat = self.Decoder(enc_z)
+        return x_hat, enc_z
 
 
 if __name__ == '__main__':
     #-------------------------------------------------
     # Test the model with mock data
     #-------------------------------------------------
-    data_x = torch.rand((10, 52+256+1))
+    data_x = torch.rand((10, 52+256+1)).to(TORCH_DEVICE)
     in_dim, hid_dim, z_dim = data_x.shape[1], 200, 52
     encoder = MLP_Encoder(in_dim, hid_dim, z_dim, True)
     decoder = MLP_Decoder(z_dim, hid_dim, in_dim, True)
+    ae_model= MLP_AE_model(encoder, decoder, 0.08).to(TORCH_DEVICE)
+    data_recon, encoding = ae_model(data_x)
     print('Input:',data_x.shape)
-    encoding = encoder(data_x)
     print('Encoding:', encoding.shape)
-    output = decoder(encoding)
-    print('Output:', output.shape)
+    print('Recon:', data_recon.shape)
     #-------------------------------------------------
-    # Show the number of parameters in each network
+    # Show the number of parameters
     #-------------------------------------------------
-    print(summary(encoder.cuda(), (1, in_dim)))
-    print(summary(decoder.cuda(), (1, z_dim)))
-
+    print(summary(ae_model.cuda(), (1, in_dim)))
     
