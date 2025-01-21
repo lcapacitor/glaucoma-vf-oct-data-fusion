@@ -42,7 +42,7 @@ from torch.utils.data import DataLoader
 from torch.utils.data.dataset import Dataset
 
 from utils import *
-from model import MLP_Encoder, MLP_Decoder
+from model import MLP_Encoder, MLP_Decoder, MLP_AE_model
 
 #==========================================================
 # Set random seed
@@ -144,6 +144,7 @@ def train(train_data, valid_data, params):
     lambda_z  = params['lambda_z']
     disp_gap  = params['disp_gap']
     out_path  = params['out_path']
+    enc_n_std = params['enc_noise_std']
     #-------------------------------------------
     if disp_gap>0:
         print('=' * 60)
@@ -171,16 +172,17 @@ def train(train_data, valid_data, params):
     dataloaders = {'train': DataLoader(vf_dataset['train'], batch_size=batch_size, shuffle=True,  num_workers=0),
                    'valid': DataLoader(vf_dataset['valid'], batch_size=batch_size, shuffle=False, num_workers=0)}
     encoder = MLP_Encoder(in_dim, hid_dim, z_dim, is_norm).to(TORCH_DEVICE)
-    decoder = MLP_Decoder(z_dim, hid_dim, out_dim, is_norm).to(TORCH_DEVICE)  
+    decoder = MLP_Decoder(z_dim, hid_dim, out_dim, is_norm).to(TORCH_DEVICE)
+    ae_model= MLP_AE_model(encoder, decoder, enc_n_std).to(TORCH_DEVICE)
     #-------------------------------------------
     b1, b2 = 0.5, 0.999
-    optimizer = optim.Adam(itertools.chain(encoder.parameters(), decoder.parameters()), lr=init_lr, betas=(b1, b2), weight_decay=wt_decay)
+    optimizer = optim.Adam(ae_model.parameters(), lr=init_lr, betas=(b1, b2), weight_decay=wt_decay)
     scheduler = lr_scheduler.ReduceLROnPlateau(optimizer, factor=0.2, patience=20)
     #-------------------------------------------
     # Training
     #-------------------------------------------
+    trained_models = None
     train_records  = {phase:[] for phase in ['train', 'valid']}
-    trained_models = {'encoder': None, 'decoder': None}
     epoch_iterator = tqdm(range(num_epochs), leave=False) if disp_gap==0 else range(num_epochs)
     best_loss, counter, early_stop = np.inf, 0, False
     #-------------------------------------------
@@ -191,17 +193,15 @@ def train(train_data, valid_data, params):
             early_stop = True
         if disp_gap>0 and (epoch%disp_gap==0 or early_stop):
             print(f'\nEpoch {epoch}/{num_epochs}, lr: {optimizer.param_groups[0]["lr"]}, weight_decay:{wt_decay}') 
-            print('-' * 30)
+            print('-' * 40)
         #-------------------------------------------
         for phase in ['train', 'valid']:
-            running_loss = 0.0
+            running_loss, tmp_rec_loss, tmp_enc_loss = 0., 0., 0.
             for b, data in enumerate(dataloaders[phase]):
                 if phase=='valid':
-                    encoder.eval()
-                    decoder.eval()
+                    ae_model.eval()
                 else:
-                    encoder.train()
-                    decoder.train()
+                    ae_model.train()
                 #-------------------------------------------
                 # Process data
                 data    = data.to(TORCH_DEVICE)
@@ -216,14 +216,14 @@ def train(train_data, valid_data, params):
                     data_in = data[:,52:-1]
                 if in_type.lower()=='vf+age':
                     data_in = torch.cat( [data[:,:52], data[:,-1].view(-1,1)], dim=1 )
-                data_tar = data_in.clone()
                 #-------------------------------------------
                 # Forward pass
-                encoding = encoder(data_in)
-                data_out = decoder(encoding)
+                data_out, encoding = ae_model(data_in)
                 #-------------------------------------------
                 # Compute loss
-                loss = (1-lambda_z)*reconstruction_loss(data_out, data_tar, loss_type, in_type, is_norm) + lambda_z*encoding_loss(encoding, real_vf, loss_type, 'vf', is_norm)
+                rec_loss = reconstruction_loss(data_out, data_in, loss_type, in_type, is_norm)
+                enc_loss = encoding_loss(encoding, real_vf, loss_type, 'vf', is_norm)
+                loss = (1-lambda_z)*rec_loss + lambda_z*enc_loss
                 #-------------------------------------------
                 # Back propagation
                 if phase=='train':
@@ -231,18 +231,21 @@ def train(train_data, valid_data, params):
                     loss.backward()
                     optimizer.step()
                 running_loss += loss.cpu().detach().item()
+                tmp_rec_loss += rec_loss.cpu().detach().item()
+                tmp_enc_loss += enc_loss.cpu().detach().item()
             #-------------------------------------------
             # Compute epoch loss, update containers
             epoch_loss = running_loss/(b+1)
+            tmp_epoch_rloss = tmp_rec_loss/(b+1)
+            tmp_epoch_eloss = tmp_enc_loss/(b+1)
             train_records[phase].append(epoch_loss)
             if phase=='valid':
                 scheduler.step(epoch_loss)
             if phase=='valid' and (epoch_loss < best_loss):
-                trained_models['encoder'] = copy.deepcopy(encoder)
-                trained_models['decoder'] = copy.deepcopy(decoder)
+                trained_models = copy.deepcopy(ae_model)
                 best_loss = epoch_loss
             if disp_gap>0 and (epoch%disp_gap==0 or early_stop):
-                print(f'{phase}: loss: {epoch_loss:.4f}')
+                print(f'{phase}: Total loss: {epoch_loss:.4f}, Recon: {tmp_epoch_rloss:.4f}, Enc: {tmp_epoch_eloss:.4f}')
         if early_stop:
             break
     #-------------------------------------------
@@ -260,17 +263,18 @@ def cv_train():
     # Parse argument
     #-------------------------------------------
     parser = argparse.ArgumentParser()
-    parser.add_argument('--num_cv',    nargs='?', type=int,  default=MODEL_PARAMETERS['num_cv'])
-    parser.add_argument('--batch_size',nargs='?', type=int,  default=MODEL_PARAMETERS['batch_size'])
-    parser.add_argument('--hidden_dim',nargs='?', type=int,  default=MODEL_PARAMETERS['hidden_dim'])
-    parser.add_argument('--init_lr',   nargs='?', type=float,default=MODEL_PARAMETERS['init_lr'])
-    parser.add_argument('--wt_decay',  nargs='?', type=float,default=MODEL_PARAMETERS['wt_decay'])
-    parser.add_argument('--loss_type', nargs='?', type=str,  default=MODEL_PARAMETERS['loss_type'])
-    parser.add_argument('--num_epochs',nargs='?', type=int,  default=MODEL_PARAMETERS['num_epochs'])
-    parser.add_argument('--lambda_z',  nargs='?', type=float,default=MODEL_PARAMETERS['lambda_z'])
-    parser.add_argument('--disp_gap',  nargs='?', type=int,  default=MODEL_PARAMETERS['disp_gap'])
-    parser.add_argument('--is_norm',   nargs='?', type=bool, default=MODEL_PARAMETERS['is_norm'])
-    parser.add_argument('--in_type',   nargs='?', type=str,  default=MODEL_PARAMETERS['in_type'])
+    parser.add_argument('--num_cv',       nargs='?', type=int,   default=MODEL_PARAMETERS['num_cv'])
+    parser.add_argument('--batch_size',   nargs='?', type=int,   default=MODEL_PARAMETERS['batch_size'])
+    parser.add_argument('--hidden_dim',   nargs='?', type=int,   default=MODEL_PARAMETERS['hidden_dim'])
+    parser.add_argument('--init_lr',      nargs='?', type=float, default=MODEL_PARAMETERS['init_lr'])
+    parser.add_argument('--wt_decay',     nargs='?', type=float, default=MODEL_PARAMETERS['wt_decay'])
+    parser.add_argument('--loss_type',    nargs='?', type=str,   default=MODEL_PARAMETERS['loss_type'])
+    parser.add_argument('--num_epochs',   nargs='?', type=int,   default=MODEL_PARAMETERS['num_epochs'])
+    parser.add_argument('--lambda_z',     nargs='?', type=float, default=MODEL_PARAMETERS['lambda_z'])
+    parser.add_argument('--disp_gap',     nargs='?', type=int,   default=MODEL_PARAMETERS['disp_gap'])
+    parser.add_argument('--is_norm',      nargs='?', type=bool,  default=MODEL_PARAMETERS['is_norm'])
+    parser.add_argument('--in_type',      nargs='?', type=str,   default=MODEL_PARAMETERS['in_type'])
+    parser.add_argument('--enc_noise_std',nargs='?', type=float, default=MODEL_PARAMETERS['enc_noise_std'])
     args = parser.parse_args()
     #-------------------------------------------
     params = vars(args)
