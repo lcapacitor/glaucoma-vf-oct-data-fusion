@@ -1,14 +1,10 @@
 #!/usr/bin/env python3
 #---------------------------------------------------------------------------------------------
 # Description: Visualize data fusion results with real VF and OCT data for three eyes
-# Author     : Leo(Yan) Li
-# Date       : January 22, 2024
-# version    : 1.0
+# Author     : Leo Yan Li-Han
+# Date       : January, 2025
+# version    : 2.0
 # License    : MIT License
-# Arguments  :
-#       eye: (str) Specify one eye to display. 
-#                  The one with mild, moderate, severe VF defects, or all of them.
-#                  Default value 'all'
 # Usage:
 #       (1) Show all three examples:   
 #               python visualize_examples.py
@@ -108,6 +104,10 @@ def display_example(selected_eye):
 def visualize_examples():
     #-------------------------------------------
     # Parse argument
+    #       eye: (str) Specify one eye to display. 
+    #                  The one with mild, moderate, severe VF defects, or all of them.
+    #                  Default value 'all'
+    #-------------------------------------------
     parser = argparse.ArgumentParser()
     parser.add_argument('--eye', choices=['mild', 'moderate', 'severe', 'all'], default='all')
     args = parser.parse_args()

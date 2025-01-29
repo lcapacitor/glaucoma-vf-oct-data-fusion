@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 #-------------------------------------------------------
 # Description: Define all constants
-# Author     : Leo(Yan) Li
-# Date       : January 22, 2024
-# version    : 1.0
+# Author     : Leo Yan Li-Han
+# Date       : January, 2025
+# version    : 2.0
 # License    : MIT License
 #-------------------------------------------------------
 import torch

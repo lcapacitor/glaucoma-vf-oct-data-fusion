@@ -1,22 +1,10 @@
 #!/usr/bin/env python3
 #---------------------------------------------------------------------------------------------
 # Description: Train the AE data fusion model with 10 fold cross-validation.
-# Author     : Leo(Yan) Li
-# Date       : January 22, 2024
-# version    : 1.0
+# Author     : Leo Yan Li-Han
+# Date       : January, 2025
+# version    : 2.0
 # License    : MIT License
-# Arguments  :
-#       num_cv:     (int)   number of CV fold, default: 10
-#       batch_size: (int)   batch size in training, default: 64
-#       hidden_dim: (int)   MLP hidden layer dimension, default: 200
-#       init_lr:    (float) initial learning rate, default: 0.001
-#       wt_decay:   (float) weight decay, default: 0.0005
-#       loss_type:  (str)   type of loss function, default: mse
-#       num_epochs: (int)   number of training epochs, default: 1000
-#       lambda_z:   (float) weight factor to balance reconstruction and encoding lossess, default: 0.6
-#       disp_gap:   (int)   display training results every n epochs, default: 100
-#       is_norm:    (bool)  data normalization, default: True
-#       in_type:    (str)   input data types, default: vf+rnfl+age
 # Usage     :
 #       (1) CV train models with mock data using default parameters:   
 #               python cv_train.py
@@ -261,6 +249,18 @@ def train(train_data, valid_data, params):
 def cv_train():
     #-------------------------------------------
     # Parse argument
+    #       num_cv:         (int)   number of CV fold, default: 10
+    #       batch_size:     (int)   batch size in training, default: 64
+    #       hidden_dim:     (int)   MLP hidden layer dimension, default: 200
+    #       init_lr:        (float) initial learning rate, default: 0.001
+    #       wt_decay:       (float) weight decay, default: 0.0005
+    #       loss_type:      (str)   type of loss function, default: mse
+    #       num_epochs:     (int)   number of training epochs, default: 1000
+    #       lambda_z:       (float) weight factor to balance reconstruction and encoding lossess, default: 0.6
+    #       disp_gap:       (int)   display training results every n epochs, default: 100
+    #       is_norm:        (bool)  data normalization, default: True
+    #       in_type:        (str)   input data types, default: vf+rnfl+age
+    #       enc_noise_std:  (float) the standard deviation of the Gaussian noise (zero mean) added to the encoding
     #-------------------------------------------
     parser = argparse.ArgumentParser()
     parser.add_argument('--num_cv',       nargs='?', type=int,   default=MODEL_PARAMETERS['num_cv'])

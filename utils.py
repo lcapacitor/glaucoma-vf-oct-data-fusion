@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #-------------------------------------------------------
 # Description: Define all helper functions
-# Author     : Leo(Yan) Li
+# Author     : Leo Yan Li-Han
 # Date       : January 22, 2024
 # version    : 1.0
 # License    : MIT License

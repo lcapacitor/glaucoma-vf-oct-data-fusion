@@ -1,15 +1,11 @@
 #!/usr/bin/env python3
 #---------------------------------------------------------------------------------------------
 # Description: The AE data fusion model to integrate VF and OCT measurements
-# Author     : Leo(Yan) Li
-# Date       : January 22, 2024
-# version    : 1.0
+# Author     : Leo Yan Li-Han
+# Date       : January, 2025
+# version    : 2.0
 # License    : MIT License
-# Encoder network (MLP_Encoder) --> Encoding --> Decoder network (MLP_Decoder)
-#       input_dim:      Input vector dimension
-#       hidden_dim:     Hidden layer dimension
-#       z_dim:          Encoding space dimension
-#       out_dim:        Output vector dimension (Note: input_dim == out_dim)
+# Encoder network (MLP_Encoder) --> Encoding (Fused data) --> Decoder network (MLP_Decoder)
 #---------------------------------------------------------------------------------------------
 import torch
 import torch.nn as nn
@@ -23,6 +19,12 @@ def init_weights(m):
         m.bias.data.fill_(0)
 
 class MLP_Encoder(nn.Module):
+    """
+    # Arguments:
+    #       input_dim:      Input vector dimension
+    #       hidden_dim:     Hidden layer dimension
+    #       z_dim:          Encoding space dimension
+    """
     def __init__(self, input_dim, hidden_dim, z_dim, is_norm=False):
         super(MLP_Encoder, self).__init__()
         self.model = nn.Sequential(
@@ -38,6 +40,12 @@ class MLP_Encoder(nn.Module):
         return z
 
 class MLP_Decoder(nn.Module):
+    """
+    # Arguments:
+    #       z_dim:          Encoding space dimension
+    #       hidden_dim:     Hidden layer dimension
+    #       out_dim:        Output vector dimension (Note: input_dim == out_dim)
+    """
     def __init__(self, z_dim, hidden_dim, out_dim, is_norm):
         super(MLP_Decoder, self).__init__()
         self.model = nn.Sequential(
@@ -57,6 +65,10 @@ class MLP_AE_model(nn.Module):
     AutoEncoder model with random noise added to the encoding before decoding/reconstruction.
     The noise is randomly sampled from a Gaussian distribution with zeros mean and given standard deviation. 
     This is to improve the robustness of the Decoder to small changes of the Encoding in the VF space.
+    # Arguments:
+    #   encoder:        (torch.nn.Module) the Encoder component
+    #   decoder:        (torch.nn.Module) the Decoder component
+    #   enc_noise_std:  (float) the standard deviation of the Gaussian noise (zero mean) added to the encoding
     """
     def __init__(self, encoder, decoder, enc_noise_std):
         super(MLP_AE_model, self).__init__()

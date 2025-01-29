@@ -1,27 +1,15 @@
 #!/usr/bin/env python3
 #---------------------------------------------------------------------------------------------
 # Description: Visualize the data fusion results
-# Author     : Leo(Yan) Li
+# Author     : Leo Yan Li-Han
 # Date       : January 22, 2024
-# version    : 1.0
+# version    : 2.0
 # License    : MIT License
-# Arguments  :
-#       num_cv:     (int)   number of CV fold, default: 10
-#       batch_size: (int)   batch size in training, default: 64
-#       hidden_dim: (int)   MLP hidden layer dimension, default: 200
-#       init_lr:    (float) initial learning rate, default: 0.001
-#       wt_decay:   (float) weight decay, default: 0.0005
-#       loss_type:  (str)   type of loss function, default: mse
-#       num_epochs: (int)   number of training epochs, default: 1000
-#       lambda_z:   (float) weight factor to balance reconstruction and encoding lossess, default: 0.6
-#       disp_gap:   (int)   display training results every n epochs, default: 100
-#       is_norm:    (bool)  data normalization, default: True
-#       in_type:    (str)   input data types, default: vf+rnfl+age
 # Usage:
-#       (1) Evaluate models trained with default parameters (using mock data):   
-#               python cv_evaluate.py
-#       (2) Evaluate models trained with specified parameters (using mock data): 
-#               python cv_evaluate.py --argument_1 value_1 --argument_2 value_2
+    #       (1) Evaluate models trained with default parameters (using mock data):   
+    #               python cv_evaluate.py
+    #       (2) Evaluate models trained with specified parameters (using mock data): 
+    #               python cv_evaluate.py --argument_1 value_1 --argument_2 value_2
 #---------------------------------------------------------------------------------------------
 import os
 import torch
@@ -137,6 +125,18 @@ def eval_visual_cv_ae(test_data, trained_model, train_record, params):
 def evaluate_ae_results():
     #-----------------------------------------------------------
     # Parse argument
+    #       num_cv:         (int)   number of CV fold, default: 10
+    #       batch_size:     (int)   batch size in training, default: 64
+    #       hidden_dim:     (int)   MLP hidden layer dimension, default: 200
+    #       init_lr:        (float) initial learning rate, default: 0.001
+    #       wt_decay:       (float) weight decay, default: 0.0005
+    #       loss_type:      (str)   type of loss function, default: mse
+    #       num_epochs:     (int)   number of training epochs, default: 1000
+    #       lambda_z:       (float) weight factor to balance reconstruction and encoding lossess, default: 0.6
+    #       disp_gap:       (int)   display training results every n epochs, default: 100
+    #       is_norm:        (bool)  data normalization, default: True
+    #       in_type:        (str)   input data types, default: vf+rnfl+age
+    #       enc_noise_std:  (float) the standard deviation of the Gaussian noise (zero mean) added to the encoding
     #-----------------------------------------------------------
     parser = argparse.ArgumentParser()
     parser.add_argument('--num_cv',       nargs='?',const=MODEL_PARAMETERS['num_cv'],       type=int,  default=MODEL_PARAMETERS['num_cv'])

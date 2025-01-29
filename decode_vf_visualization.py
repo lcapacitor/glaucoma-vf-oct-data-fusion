@@ -1,3 +1,11 @@
+#!/usr/bin/env python3
+#---------------------------------------------------------------------------------------------
+# Description: Visualize decoding/reconstruction results from VF to RNFL spaces
+# Author     : Leo Yan Li-Han
+# Date       : January, 2025
+# version    : 2.0
+# License    : MIT License
+#---------------------------------------------------------------------------------------------
 import os
 import torch
 import numpy as np

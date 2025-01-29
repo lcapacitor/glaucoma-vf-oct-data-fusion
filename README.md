@@ -9,8 +9,10 @@ The overall architecture of the autoencoder (AE) data fusion model. The input to
 Li-Han, L.Y.; Eizenman, M.; Shi, R.B.; Buys, Y.M.; Trope, G.E.; Wong,W. Using Fused Data from Perimetry and Optical Coherence Tomography to Improve the Detection of Visual Field Progression in Glaucoma. Bioengineering 2024, 11, 250. https://doi.org/10.3390/bioengineering11030250
 
 ## Usage
-### 0. Install Dependencies:
+### 0. Install Environment & Dependencies:
 ```
+conda create -n ae-fusion python==3.9.7
+conda activate ae-fusion
 pip install -r requirements.txt
 ```
 
