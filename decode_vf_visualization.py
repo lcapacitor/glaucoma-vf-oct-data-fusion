@@ -9,7 +9,7 @@ from utils import vf_gray_image, vf_point_image, normalize, de_normalize
 from constants import *
 
 
-class Decode_VF_Visualization(object):
+class Decode_VF_Visualization:
     """
     Decode a given VF (array(52) to RNFL thickness profile using the trained Decoder.
     Input: 
